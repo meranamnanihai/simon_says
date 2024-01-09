@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simon says game</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+  <link rel="icon" href="favicon.png">
+</head>
+
+<body>
+  <h1 id="level-title">Click Anywhere to Start</h1>
+  <div class="container">
+    <div class="row">
+
+      <div type="button" id="green" class="btn green" style="margin-top: 0px;">
+
+      </div>
+
+      <div type="button" id="red" class="btn red">
+
+      </div>
+    </div>
+
+    <div class="row">
+
+      <div type="button" id="yellow" class="btn yellow" style="margin-top: 0px;">
+
+      </div>
+      <div type="button" id="blue" class="btn blue">
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    let body = document.getElementsByTagName("body")[0];
+    let title = document.getElementById("level-title");
+    let simon_says = "";
+    let player_says = "";
+    let yellow = document.getElementById("yellow");
+    let green = document.getElementById("green");
+    let blue = document.getElementById("blue");
+    let red = document.getElementById("red");
+    let btns = document.getElementsByClassName("btn")
+    let level = 0;
+    let currentAudio = document.createElement("audio")
+    let game_instance = 1
+
+    btns = Array.from(btns)
+
+
+    document.addEventListener("click", async function (e) {
+      level = 0;
+      simon_says = "";
+      player_says = "";
+
+
+
+
+
+      async function blink_randomColor(params) {
+        return new Promise((resolve, reject) => {
+          let randomColor = Math.floor((Math.random() * 4))
+
+          switch (randomColor) {
+            case 1:
+
+              randomColor = "green"
+              break;
+            case 2:
+              randomColor = "yellow"
+
+              break;
+            case 3:
+              randomColor = "red"
+
+              break;
+
+            default:
+              randomColor = "blue"
+
+              break;
+          }
+
+          randomSoundColor = randomColor
+          randomColor = document.getElementById(randomColor)
+          setTimeout(() => {
+            randomColor.style.visibility = "hidden"
+            simon_says = simon_says + randomSoundColor
+
+            currentAudio.src = `sounds/${randomSoundColor}.mp3`
+            currentAudio.play();
+            level += 1;
+            title.innerHTML = "Level " + level
+          }, 500);
+          setTimeout(() => {
+            randomColor.style.visibility = "visible"
+            resolve(2)
+
+          }, 1000);
+        })
+
+      }
+      await blink_randomColor();
+      let index2 = 0;
+      console.log(btns)
+      if (game_instance == 1) {
+        game_instance = 2;
+        for (let index = 0; index < btns.length; index++) {
+        const element = btns[index];
+        index2 = index2 + 1;
+        element.addEventListener('click', (event) => {
+          event.stopPropagation();
+          setTimeout(async () => {
+
+            element.classList.add("pressed");
+
+            player_says = player_says + element.id
+            console.log(player_says, simon_says.slice(0, player_says.length))
+            if (simon_says == player_says) {
+              await blink_randomColor();
+
+              player_says = "";
+            }
+            
+            else if (simon_says.length !=0 && simon_says.slice(0, player_says.length) != player_says) {
+              title.innerHTML = "Game over ! Click anywhere to restart"
+              body.classList.add("game-over");
+              currentAudio.src = "sounds/wrong.mp3"
+              currentAudio.play()
+              simon_says = "";
+              player_says = "";
+
+
+
+
+            }
+
+
+          }, 200);
+          setTimeout(() => {
+            body.classList.remove("game-over");
+            element.classList.remove("pressed");
+          }, 400);
+        })
+
+
+      }
+      }
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+    })
+
+  </script>
+</body>
+<footer>
+  Made by Admya Salar
+</footer>
+
+
+</html>
